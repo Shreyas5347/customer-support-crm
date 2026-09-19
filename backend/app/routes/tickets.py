@@ -5,6 +5,7 @@ from app.database import get_db
 from app.schemas import (
     CreateTicketRequest,
     CreateTicketResponse,
+    CustomerTrackResponse,
     TicketCategory,
     TicketDetailResponse,
     TicketListResponse,
@@ -16,6 +17,7 @@ from app.services import (
     create_ticket,
     get_ticket,
     list_tickets,
+    track_ticket,
     update_ticket,
 )
 
@@ -43,6 +45,25 @@ def create_new_ticket(
 
 
 @router.get(
+    "/track",
+    response_model=CustomerTrackResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Track a ticket by ID and Email",
+    description="Allows customers to track their own ticket status securely using Ticket ID and Email. Does not reveal internal notes or other tickets.",
+)
+def track_customer_ticket(
+    ticket_id: str = Query(..., description="Ticket ID (e.g. TKT-72EEA95B)"),
+    email: str = Query(..., description="Customer Email address"),
+    db: Session = Depends(get_db)
+):
+    return track_ticket(
+        db=db,
+        ticket_id=ticket_id,
+        email=email
+    )
+
+
+@router.get(
     "",
     response_model=list[TicketListResponse],
     status_code=status.HTTP_200_OK,
@@ -51,19 +72,40 @@ def create_new_ticket(
 )
 def list_all_tickets(
     search: str | None = Query(None, description="Search string across ticket ID, customer name, email, subject, or description"),
-    status: TicketStatus | None = Query(None, description="Filter by ticket status"),
-    priority: TicketPriority | None = Query(None, description="Filter by ticket priority"),
-    category: TicketCategory | None = Query(None, description="Filter by ticket category"),
+    status: str | None = Query(None, description="Filter by ticket status (e.g. Open, OPEN, IN_PROGRESS, Closed)"),
+    priority: str | None = Query(None, description="Filter by ticket priority"),
+    category: str | None = Query(None, description="Filter by ticket category"),
     page: int = Query(1, ge=1, description="Page number (1-indexed)"),
     limit: int = Query(20, ge=1, le=100, description="Number of tickets per page"),
     db: Session = Depends(get_db)
 ):
+    status_enum = None
+    if status:
+        try:
+            status_enum = TicketStatus(status.upper().strip().replace(" ", "_"))
+        except ValueError:
+            pass
+
+    priority_enum = None
+    if priority:
+        try:
+            priority_enum = TicketPriority(priority.upper().strip())
+        except ValueError:
+            pass
+
+    category_enum = None
+    if category:
+        try:
+            category_enum = TicketCategory(category.upper().strip())
+        except ValueError:
+            pass
+
     return list_tickets(
         db=db,
-        status=status,
+        status=status_enum,
         search=search,
-        priority=priority,
-        category=category,
+        priority=priority_enum,
+        category=category_enum,
         page=page,
         limit=limit,
     )

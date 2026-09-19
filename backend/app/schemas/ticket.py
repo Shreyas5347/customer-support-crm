@@ -63,11 +63,9 @@ class TicketListResponse(BaseModel):
     priority: TicketPriority
     category: TicketCategory
     created_at: datetime
+    sla_due_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
-
-
-
 
 
 class TicketDetailResponse(BaseModel):
@@ -82,9 +80,27 @@ class TicketDetailResponse(BaseModel):
     ai_summary: str | None
     created_at: datetime
     updated_at: datetime
+    sla_due_at: datetime | None = None
     notes: list[NoteResponse]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CustomerTrackResponse(BaseModel):
+    ticket_id: str
+    customer_name: str
+    customer_email: EmailStr
+    subject: str
+    description: str
+    status: TicketStatus
+    priority: TicketPriority
+    category: TicketCategory
+    ai_summary: str | None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CreateTicketResponse(BaseModel):
     ticket_id: str
