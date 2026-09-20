@@ -116,6 +116,15 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+@media (max-width: 768px) {
+  .portal-header {
+    flex-direction: column;
+    height: auto;
+    padding: 16px;
+    gap: 12px;
+  }
+}
+
 .portal-brand { display: flex; align-items: center; gap: 12px; }
 
 .portal-logo {
@@ -137,6 +146,10 @@ body {
 }
 
 .portal-main { max-width: 1280px; margin: 0 auto; width: 100%; padding: 28px 28px 60px; }
+
+@media (max-width: 768px) {
+  .portal-main { padding: 16px 16px 60px; }
+}
 
 /* ── Stats Metric Cards ─────────────────────────────────────────────────── */
 .stats-bar {
@@ -179,6 +192,13 @@ body {
   border: 1px solid var(--border); box-shadow: var(--shadow-sm);
 }
 
+@media (max-width: 768px) {
+  .filters-bar > * {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+}
+
 .search-wrap {
   position: relative; flex: 1; min-width: 240px;
 }
@@ -208,6 +228,10 @@ body {
   outline: none; cursor: pointer; transition: all 0.2s;
 }
 .filter-select:focus { border-color: var(--accent); background: var(--surface); }
+
+@media (max-width: 768px) {
+  .filter-select { width: 100%; }
+}
 
 /* ── Ticket Grid & Cards ────────────────────────────────────────────────── */
 .tickets-grid {
