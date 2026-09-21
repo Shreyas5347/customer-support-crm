@@ -2,6 +2,12 @@
 
 A modern customer relationship management (CRM) tool tailored for support teams. Built with a React + Vite frontend and a Python FastAPI backend.
 
+## Key Features
+
+- **AI-powered ticket triage:** Automatically analyzes newly created tickets and determines their priority, category, and a concise summary. The system also includes a rule-based fallback to ensure ticket creation can continue if the AI service is unavailable.
+
+- **SLA management:** Uses ticket priority to determine response deadlines and helps support agents identify tickets that are approaching or have exceeded their SLA.
+
 ## Project Structure
 
 ```
@@ -72,3 +78,4 @@ datastraw-support-crm/
 ## Deployment
 
 This project uses `render.yaml` to seamlessly deploy the backend as a Web Service on Render. The frontend is configured for deployment on platforms like Vercel or Render.
+- Live Application: [https://customer-support-crm-mauve.vercel.app/]
