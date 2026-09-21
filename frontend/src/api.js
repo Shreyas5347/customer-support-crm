@@ -17,7 +17,15 @@ async function request(path, options = {}) {
       ...headers,
     },
   });
-  const data = await res.json();
+  let data = null;
+  if (res.status !== 204) {
+    try {
+      data = await res.json();
+    } catch (e) {
+      console.warn("Failed to parse JSON response:", e);
+    }
+  }
+
   if (!res.ok) {
     const msg = data?.error?.message || data?.detail || "Something went wrong.";
     throw new Error(msg);
@@ -58,6 +66,11 @@ export const api = {
     request(`/api/tickets/${ticketId}`, {
       method: "PUT",
       body: JSON.stringify(body),
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    }),
+  deleteTicket: (ticketId, token) =>
+    request(`/api/tickets/${ticketId}`, {
+      method: "DELETE",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     }),
 };

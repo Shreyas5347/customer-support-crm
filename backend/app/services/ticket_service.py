@@ -221,4 +221,20 @@ def update_ticket(
             "Unable to update ticket."
         ) from exc
 
-
+def delete_ticket(
+    db: Session,
+    ticket_id: str,
+) -> None:
+    try:
+        ticket = get_ticket(db, ticket_id)
+        db.delete(ticket)
+        db.commit()
+        logger.info(f"Ticket deleted: {ticket_id}")
+    except TicketNotFoundError:
+        raise
+    except Exception as exc:
+        db.rollback()
+        logger.error(f"Database error while deleting ticket {ticket_id}: {exc}")
+        raise TicketUpdateError(
+            "Unable to delete ticket."
+        ) from exc

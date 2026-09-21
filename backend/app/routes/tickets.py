@@ -19,6 +19,7 @@ from app.services import (
     list_tickets,
     track_ticket,
     update_ticket,
+    delete_ticket,
 )
 
 router = APIRouter(
@@ -144,4 +145,21 @@ def update_existing_ticket(
         db=db,
         ticket_id=ticket_id,
         update_data=update_data
-    )
+    )
+
+
+@router.delete(
+    "/{ticket_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a ticket",
+    description="Deletes a ticket by its ID.",
+)
+def delete_existing_ticket(
+    ticket_id: str,
+    db: Session = Depends(get_db)
+):
+    delete_ticket(
+        db=db,
+        ticket_id=ticket_id
+    )
+

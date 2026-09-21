@@ -4,6 +4,7 @@ from app.services.ticket_service import (
     list_tickets,
     track_ticket,
     update_ticket,
+    delete_ticket,
 )
 from app.services.triage_fallback import fallback_triage
 from app.services.triage_service import triage_ticket
@@ -14,6 +15,7 @@ __all__ = [
     "list_tickets",
     "track_ticket",
     "update_ticket",
+    "delete_ticket",
     "triage_ticket",
     "fallback_triage",
 ]

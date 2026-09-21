@@ -124,6 +124,28 @@ function DashboardPage({ onSelectTicket, onNavigateCreate, toast }) {
   const [sortBy, setSortBy] = useState("sla"); // "sla" | "newest" | "oldest"
   const debounceRef = useRef(null);
 
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+
+  useEffect(() => {
+    const closeDropdown = () => setOpenDropdownId(null);
+    window.addEventListener("click", closeDropdown);
+    return () => window.removeEventListener("click", closeDropdown);
+  }, []);
+
+  const handleDeleteTicket = async (e, id) => {
+    e.stopPropagation();
+    setOpenDropdownId(null);
+    if (window.confirm("Are you sure you want to delete this ticket?")) {
+      try {
+        await api.deleteTicket(id);
+        toast("✅ Ticket deleted!", "success");
+        setTickets((prev) => prev.filter((t) => t.ticket_id !== id));
+      } catch (err) {
+        toast(err.message, "error");
+      }
+    }
+  };
+
   const loadTickets = useCallback(async (params) => {
     setLoading(true);
     try {
@@ -327,7 +349,61 @@ function DashboardPage({ onSelectTicket, onNavigateCreate, toast }) {
             >
               <div className="ticket-card-header">
                 <span className="ticket-card-id">{t.ticket_id}</span>
-                <SLABadge ticket={t} />
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <SLABadge ticket={t} />
+                  {t.status === "CLOSED" && (
+                    <div className="dropdown-container" style={{ position: "relative" }}>
+                      <button
+                        className="btn-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenDropdownId(openDropdownId === t.ticket_id ? null : t.ticket_id);
+                        }}
+                        style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: "1.2rem", padding: "0 4px" }}
+                      >
+                        ⋮
+                      </button>
+                      {openDropdownId === t.ticket_id && (
+                        <div
+                          className="dropdown-menu"
+                          style={{
+                            position: "absolute",
+                            right: 0,
+                            top: "100%",
+                            background: "var(--surface)",
+                            border: "1px solid var(--border)",
+                            borderRadius: "6px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                            zIndex: 10,
+                            minWidth: "140px",
+                            padding: "4px 0"
+                          }}
+                        >
+                          <button
+                            onClick={(e) => handleDeleteTicket(e, t.ticket_id)}
+                            style={{
+                              width: "100%",
+                              padding: "8px 16px",
+                              background: "transparent",
+                              border: "none",
+                              textAlign: "left",
+                              cursor: "pointer",
+                              color: "var(--high)",
+                              fontSize: "0.9rem",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px"
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.background = "var(--surface2)"}
+                            onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+                          >
+                            🗑️ Delete Ticket
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <h3 className="ticket-card-subject">{t.subject}</h3>
