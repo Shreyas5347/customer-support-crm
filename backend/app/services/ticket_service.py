@@ -116,7 +116,6 @@ def list_tickets(
                 Ticket.customer_name.ilike(search_term),
                 Ticket.customer_email.ilike(search_term),
                 Ticket.subject.ilike(search_term),
-                Ticket.description.ilike(search_term),
             )
         )
 
